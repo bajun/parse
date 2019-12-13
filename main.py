@@ -38,7 +38,7 @@ def parse_and_count(times):
     temp_res += pool.map(get_data, [num] * proc_num + [last])
 
     result = sum(temp_res, Counter())
-    print '\r\n'.join(['%s %d' % (x[0], x[1]) for x in result.most_common(10)])
+    return '\r\n'.join(['%s %d' % (x[0], x[1]) for x in result.most_common(10)])
 
 if __name__ == '__main__':
     print parse_and_count(100)
