@@ -3,10 +3,14 @@ import urllib2
 from collections import Counter
 from multiprocessing import Pool, cpu_count
 
-from helpers import timeit, clean_names
+from helpers import timeit, clean_names, prepare_chunks
 
 
 def get_data(n):
+    return get_data_wrapped(n)
+
+
+def get_data_wrapped(n):
     names = Counter()
     url = "http://www.namefake.com"
     i = 0
@@ -27,18 +31,17 @@ def get_data(n):
 
 
 @timeit
-def parse_and_count(times):
+def parse(times):
     temp_res = []
     proc_num = cpu_count() * 2
-    num = times / proc_num
-    last = times % proc_num
-
+    chunks = prepare_chunks(times, proc_num)
     # in this block we spawn our process for the number AND for remainder of our approximated count
     pool = Pool(processes=proc_num + 1)
-    temp_res += pool.map(get_data, [num] * proc_num + [last])
+    temp_res += pool.map(get_data, chunks)
+    return temp_res
 
-    result = sum(temp_res, Counter())
-    return '\r\n'.join(['%s %d' % (x[0], x[1]) for x in result.most_common(10)])
 
 if __name__ == '__main__':
-    print parse_and_count(100)
+    parsed_names = parse(100)
+    count = sum(parsed_names, Counter())
+    print '\r\n'.join(['%s %d' % (x[0], x[1]) for x in count.most_common(10)])

@@ -32,3 +32,10 @@ def clean_names(name):
     # also we know that names and surnames are Capitalized Words, so we'll add istitle filter too
     filters = [is_not_appeal, is_not_miss, is_not_abbreviation, str.istitle]
     return filter(lambda x: all(f(x) for f in filters), name)
+
+
+def prepare_chunks(times, proc_num):
+    num = times / proc_num
+    last = times % proc_num
+    # assume that we dont need to run 0 values
+    return filter(lambda x: x > 0, [num] * proc_num + [last])
